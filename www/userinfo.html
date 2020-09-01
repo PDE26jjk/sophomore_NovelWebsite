@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>用户信息</title>
+	<link rel="icon" href="img/logo1.png" type="image/x-icon">
+	<link rel="stylesheet" href="css/search.css">
+	<link rel="stylesheet" href="css/global.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script src="js/axios.min.js"></script>
+</head>
+<body style="background-color: rgb(245,245,245);">
+<div id="base">
+	<!-- 页头1.5 -->
+	<div class="top_color"></div>
+	<div class="top_bar">
+		<div class="content top_content">
+			<div class="top_content_left">
+				<span class="a" @click='index' style="float: left;">悦享小说网站</span>
+			</div>
+			<div class="top_content_right">
+				<div class="search_div">
+					<input class="search_input" type="text" placeholder="请输入关键词" v-model='search_key' @keyup.enter='search' @focus='search_input_focus' @blur='search_input_blur'/>
+					<i class="fa fa-search a icon" style="width: 15px;font-size:18px;color:rgb(102,102,102);" @click='search'></i>
+				</div>
+				<div style="display: inline;" style="display: none;" v-show="!is_login">
+					<div class="register_div a" @click='register'>免费注册</div>
+					<div class="login_div a" style="display: inline-block;color:#FFF; background-color: rgb(354,94,90); width: 100px;text-align: center;" @click='login'>用户登录</div>
+				</div>
+				<div class="my_box"  style="display: none;" v-show="is_login">
+
+					<span class="my_coll a" @click='tomy_coll'>
+						<i class="fa fa-star " style="width: 15px;font-size:18px;"></i>
+						收藏
+					</span>
+					<span class="my_comment a" @click='tomy_comment'>
+						<i class="fa fa-comments " style="width: 15px;font-size:18px;"></i>
+						评论
+					</span>
+					<span class="my_like a" @click='tomy_sub'>
+						<i class="fa fa-bell " style="width: 15px;font-size:18px;"></i>
+						消息
+					</span>
+					<div class="my_av a" @click='space'>
+						<img class="my_av_pic" :src="_mediaPath+avatar" alt="my_av" style="border-radius: 50%;">
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div id="main">
+	<!-- 页面关系 -->
+	<div class="search_header content">
+		<span class="a ho_red" @click='_index'>网站首页</span>> <span class="">用户信息</span>
+	</div>
+
+	<div class="header content" style="text-align: center; position: static!important; margin-left: 0px;height: 122px;">
+		<img src="img/logo1.png" alt="" style="height: 50px;display: inline-block; margin: 30px 0 0">
+		<img src="img/logo2.png" alt="" style="height: 40px; display: inline-block;margin: 30px 20px 0 5px"  >
+		
+	</div>
+
+	<div class="main bor_grey" style="width: 865px; margin: 0 auto; padding-bottom: 30px;position: relative;">
+		<!-- 订阅按钮 -->
+		<div class="sub_bt a " @click='subscribe' :class="[is_sub?'sub_bt_selected':'']">
+			{{is_sub?'已订阅':'订阅+'}}
+		</div>
+		<div class="user_pic_box">
+            <div class="usr_pic_div">
+                <img :src="_mediaPath+avatar" class="usr_pic"/>
+            </div>
+
+            <p class='text_center2' style="font-size: 18px;margin: 5px auto 0;width: 321px;">{{nickname}}</p>
+        </div>
+        <div class="info_all">
+            <div class="line"></div>
+            <div class="info_intro info_content">
+                <div class="info_title">个人简介</div>
+                <div class="intro_content">
+                   {{intro}}
+                </div>
+            </div>
+            <div class="info_like info_content">
+                <div class="info_title">TA的点赞</div>
+                <div class="like_content">
+                    <img :src="_mediaPath+item.pic" class="like_content_pic a" :alt="item.title" v-for='item in like_list' @click='_tobook(item.id)'>
+                </div>
+            </div>
+            <div class="info_coll info_content">
+                <div class="info_title">TA的收藏</div>
+                <div class="like_content">
+                    <img :src="_mediaPath+item.pic" class="like_content_pic a" :alt="item.title"  v-for='item in coll_list' @click='_tobook(item.id)'>
+
+                </div>
+            </div>
+            <div class="info_work info_content">
+                <div class="info_title">TA的作品</div>
+                <div class="like_content">
+                    <img :src="_mediaPath+item.pic" class="like_content_pic a" :alt="item.title"  v-for='item in work_list' @click='_tobook(item.id)'>
+                </div>
+            </div>
+            <div class="info_sub info_content">
+                <div class="info_title">TA的订阅</div>
+                <div class="sub_content">
+					<!-- 重复内容 -->
+					<div class="sub_user_box" v-for='item in sub_list'>
+						<img :src="_mediaPath+item.avatar" :alt="item.name">
+						<div class="sub_user_name a" @click='touserinfo(item.id)' >
+							{{item.nickname}}
+						</div>
+					</div>
+            </div>
+        </div>
+
+		<div class="page_list">
+			
+		</div>
+	</div>
+
+	</div>
+</div>
+	<!-- 页尾 -->
+	<div class="footer">
+		<p>网站首页  |  联系方法  |  招聘信息  |  客户服务  |  隐私政策  |  广告服务  |   网站地图   |  意见反馈  |  不良信息举报</p>
+		<p style="margin: 10px 0"><a href="http://icp.chinaz.com/info?q=26jjk.cn" style="color: rgb(184, 185, 187); ">京ICP备20008448号-1</a> </p>
+	</div>
+
+</body>
+	<script type="text/javascript" src="js/global.js"></script>
+	<script type="text/javascript" src="js/userinfo.js"></script>
+</html>

@@ -1,0 +1,153 @@
+
+
+.memu_bar{
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+.memu_list>li{
+	display:inline-block;
+	font-size: 14px;
+	padding: 0 25px;
+	font-family: 微软雅黑;
+	color: #666666;
+
+}
+
+.memu_list>li:hover{
+	border-radius: 15px;
+	background-color: rgb(294,94,90);
+	color: white;
+	cursor: pointer;
+}
+.main_content{
+	position: static!important;
+	padding: 22px 0 0;
+}
+/*.memu_selected{
+	border-radius: 15px;
+	background-color: rgb(294,94,90);
+	color: white;
+}*/
+.recommend_box{
+	vertical-align:top;
+	width: 250px;
+	display: inline-block;
+	height: 200px;
+
+
+}
+.hot_box{
+
+	width: 570px;
+	display: inline-block;
+	margin: 0 15px;
+	vertical-align:top;
+	
+}
+.hot_roll{
+	position: relative;
+}
+.right_box{
+
+	width: 340px;
+	display: inline-block;
+	
+	vertical-align:top;
+}
+.recommend_title{
+	border-left: 4px solid red;
+	height: 40px;
+	line-height: 40px;
+/*	font-size: 20px;
+	font-family: 微软雅黑;*/
+	font: normal bold 18px/40px '微软雅黑 Bold','微软雅黑 Regular',sans-serif;
+	padding: 0 20px;
+	background-color: rgb(245,245,245);
+}
+.hot_content_title{
+	font-size: 16px;
+	color: #666666;
+}
+.hot_content span{
+	
+	font: normal 14.4px/15px 微软雅黑;
+}
+.hot_content_type:hover{
+	color: #333333;
+}
+.hot_content_com{
+	color: rgb(210,210,210);
+}
+.title{
+	color: #2c2c2c;
+	height: 40px;
+	line-height: 40px;
+	font-size: 20px;
+	font-weight:800;
+	padding: 0 20px;
+	background-color: rgb(245,245,245);
+}
+.charge_bt{
+	border: 0px solid grey;
+	display: inline-block;
+	float: right;
+	padding: 5px;	
+}
+.recommend{
+	
+
+}
+.recommend_content{
+	position: relative;
+	margin-bottom: 10px;
+}
+.recommend_pic{
+	width: 250px;
+	height: 141px;
+}
+.recommend_content_title{
+	position: absolute;
+	top:102px;
+	color: white;
+	width: 240px;
+	height: 41px;
+	line-height: 41px;
+	background-color: grey;
+	opacity: 0.9;
+	padding-left:10px;
+	 
+}
+.hot_roll_pic{
+	width: 570px;
+	height: 301px;
+}
+.hot_roll_title{
+	position: absolute;
+	top:250px;
+	color: white;
+	width: 550px;
+	height: 50px;
+	line-height: 50px;
+	background-color: grey;
+	opacity: 0.9;
+	padding-left:20px;
+}
+.hot_content_box{
+
+	width: 570px;
+	height: 95px;
+	border-bottom: 1px solid grey;
+	margin-top: 10px;
+	height: 82px;
+	margin-bottom: 10px;
+}
+.hot_content_pic{
+	width: 100px;
+	height: 75px;
+}
+
+
+
+
+

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>小说评论</title>
+	<link rel="icon" href="img/logo1.png" type="image/x-icon">
+	<link rel="stylesheet" href="css/art.css">
+	<link rel="stylesheet" href="css/global.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script src="js/axios.min.js"></script>
+	<script src="js/qs.min.js"></script>
+</head>
+<body style="background-color: rgb(245,245,245);">
+<div id="base">
+	<!-- 页头1.5 -->
+	<div class="top_color"></div>
+	<div class="top_bar">
+		<div class="content top_content">
+			<div class="top_content_left">
+				<span class="a" @click='index' style="float: left;">悦享小说网站</span>
+			</div>
+			<div class="top_content_right">
+				<div class="search_div">
+					<input class="search_input" type="text" placeholder="请输入关键词" v-model='search_key' @keyup.enter='search' @focus='search_input_focus' @blur='search_input_blur'/>
+					<i class="fa fa-search a icon" style="width: 15px;font-size:18px;color:rgb(102,102,102);" @click='search'></i>
+				</div>
+				<div style="display: inline;" style="display: none;" v-show="!is_login">
+					<div class="register_div a" @click='register'>免费注册</div>
+					<div class="login_div a" style="display: inline-block;color:#FFF; background-color: rgb(354,94,90); width: 100px;text-align: center;" @click='login'>用户登录</div>
+				</div>
+				<div class="my_box"  style="display: none;" v-show="is_login">
+
+					<span class="my_coll a" @click='tomy_coll'>
+						<i class="fa fa-star " style="width: 15px;font-size:18px;"></i>
+						收藏
+					</span>
+					<span class="my_comment a" @click='tomy_comment'>
+						<i class="fa fa-comments " style="width: 15px;font-size:18px;"></i>
+						评论
+					</span>
+					<span class="my_like a" @click='tomy_sub'>
+						<i class="fa fa-bell " style="width: 15px;font-size:18px;"></i>
+						消息
+					</span>
+					<div class="my_av a" @click='space'>
+						<img class="my_av_pic" :src="_mediaPath+avatar" alt="my_av" style="border-radius: 50%;">
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div id="comment_app">
+	<!-- 子评论编辑层 -->
+	<div class="comment_mask" style="" v-show='is_rep'>
+		<div class="rep_comment_input_div">
+			<div style="width: 475px;height: 20px;padding-top: 10px;"><i class="fa fa-close a icon" @click='is_rep=!is_rep' style="float:right;width: 15px;font-size:20px;color:rgb(102,102,102); "></i></div>
+			<div class="rep_comment_input_box bor_grey">
+				<textarea class="rep_comment_input_content" maxlength="250" :placeholder='rep_user_name' v-model='rep_content'></textarea>
+				<div class="pub_bt_2 a" @click='reply'>
+				发 布
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<!-- 页面关系 -->
+	<div class="art_header content">
+	<span class="a ho_red" @click = 'toIndex'>网站首页</span>> <span class="a ho_red" @click='todetail'>{{title}}</span>> 作品评论
+	</div>
+	<div class="art_title_bar content">
+		<div class="art_title ho_black a" style="border-left: 5px solid rgb(294,94,90); padding: 4px 10px;" @click='todetail'>
+			{{title}}
+		</div>
+	</div>
+	<!-- 主要内容 -->
+	<div class="main_content content " style="background-color: #fff;">
+		<div class="comment_detail bor_grey">
+			<div class="first_line" style="padding-bottom: 10px; ">
+				<span style="font: bold 18px/30px '微软雅黑 Bold'; color: #666666">网友评论</span> 
+				<span style="font: normal 12px/20px '微软雅黑 Bold'; color: #CCCCCC">文明上网理性发言，请遵守新闻评论服务协议</span>
+				<span style="font: normal 14px/20px '微软雅黑 Bold';color: #666666;float: right;">{{com_num}}条评论&nbsp&nbsp</span>
+			</div>
+			<!-- 输入框 -->
+			<div class="comment_input_box">
+				<div class="user_av_name">
+						<img class="user_av_pic" :src="getavatar"/>
+						<p v-show='is_login'>请登录</p>
+				</div>
+				<div class="comment_input_div bor_grey">
+					<textarea class="comment_input" name="" id=""  placeholder="文明社会，从理性评论开始。(250字内）" maxlength="250" v-model='comment_text'></textarea>
+
+					<div class="pub_div">
+						<div class="pub_bt a" @click='comment'>发布</div>
+					</div>
+				</div>					
+			</div>
+			<!-- 评论 -->
+			<div class="second_line" style="padding: 50px 0 20px; border-bottom: 1px solid #eee">
+				<span style="font: bold 18px/30px '微软雅黑 Bold'; color: #666666">全部评论</span>
+				<span style="font: normal 14px/20px '微软雅黑 Bold';color: #999999;float: right;">
+					<span class="a ho_black">最新</span>/
+					<span class="a ho_black">最热</span>
+					&nbsp&nbsp
+				</span> 
+			</div>
+
+			<div class="art_comment_box">
+				<!-- 评论1 -->
+				<div class="art_comment_content" v-for='con in comments'>
+					<div class="user_av">
+						<img class="user_av_pic" :src="mediaPath+con.user.avatar"/>
+					</div>
+					
+					<div class="comment_detail_2">
+						<div class="user_name_time">
+							<span class="user_name">{{get_user_nameornick(con)}}</span>
+							<span class="com_time">{{con.pub_time}}</span>
+						</div>
+						<div class="commemt_text">
+							{{con.content}}
+						</div>
+						<!-- 子评论 -->
+						<div class="rep_comment_box" v-if='con.reply[0]'>
+							<!-- 子评论1 -->
+							<div class="rep_comment_div" >
+								<div class="rep_comment" v-for='rep_con in con.reply'>
+									<div class="rep_user_av">
+										<img class="rep_user_av_pic" :src="_mediaPath+rep_con.user.avatar"/>
+									</div>
+									<div class="rep_comment_detail">
+										<div class="rep_user_name_time">
+											<span class="user_name">{{get_user_nameornick(rep_con)}}</span>
+											<span class="com_time">{{time(rep_con.pub_time)}}</span>
+										</div>
+										<div class="rep_commemt_text" style="width: 665px;">
+											{{add_rep_user_text(rep_con.content,con,rep_con)}}
+										</div>
+										<div class='rep_interact'>
+											<!-- <i class="fa fa-heart a" ></i>赞23· -->
+											
+											<span class="a ho_black" @click='reply_mask(rep_con,con.id)'>回复</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class='interact'>
+							<!-- <i class="fa fa-heart a" ></i>赞 23· -->
+							
+							<span @click='reply_mask(con,con.id)' class="a ho_black">回复</span>
+						</div>
+					</div>
+
+				</div>
+
+				
+					
+
+			</div>
+			
+		</div>
+
+
+		
+
+		<div class="some_recommend">
+			<div class="third_line" style="padding: 10px 20px;">
+				<span style="font: bold 18px/30px '微软雅黑 Bold'; color: #333333">相关推荐</span> 		
+			</div>
+
+			<div class="recommend_box_2" v-for='item in recommend_list '>
+				<div class="recommend_content_2">
+					<img class="recommend_pic_2 a" :src="get_pic(item)" @click='_tobook(item.id)'/>
+					<div class="recommend_content_title_2_div">
+						<p class="recommend_content_title_2 a ho_black" @click='_tobook(item.id)'>{{item.title}}</p>
+						<p class="recommend_content_author_2">作者：{{get_user_nameornick(item)}}</p>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+		
+			
+		
+
+		
+
+
+
+	</div>
+
+
+
+
+</div>
+	<!-- 页尾 -->
+	<div class="footer">
+		<p>网站首页  |  联系方法  |  招聘信息  |  客户服务  |  隐私政策  |  广告服务  |   网站地图   |  意见反馈  |  不良信息举报</p>
+		<p style="margin: 10px 0"><a href="http://icp.chinaz.com/info?q=26jjk.cn" style="color: rgb(184, 185, 187); ">京ICP备20008448号-1</a> </p>
+	</div>
+</body>
+
+	<script type="text/javascript" src="js/global.js"></script>
+	<script type="text/javascript" src="js/comment.js"></script>
+</html>

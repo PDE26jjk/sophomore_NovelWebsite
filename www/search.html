@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>搜索结果</title>
+	<link rel="icon" href="img/logo1.png" type="image/x-icon">
+	<link rel="stylesheet" href="css/search.css">
+	<link rel="stylesheet" href="css/global.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script src="js/axios.min.js"></script>
+</head>
+<body style="background-color: rgb(245,245,245);">
+<div id="base">
+	<!-- 页头1.5 -->
+	<div class="top_color"></div>
+	<div class="top_bar">
+		<div class="content top_content">
+			<div class="top_content_left">
+				<span class="a" @click='index' style="float: left;">悦享小说网站</span>
+			</div>
+			<div class="top_content_right">
+				<div class="search_div">
+					<input class="search_input" type="text" placeholder="请输入关键词" v-model='search_key' @keyup.enter='search' @focus='search_input_focus' @blur='search_input_blur'/>
+					<i class="fa fa-search a icon" style="width: 15px;font-size:18px;color:rgb(102,102,102);" @click='search'></i>
+				</div>
+				<div style="display: inline;" style="display: none;" v-show="!is_login">
+					<div class="register_div a" @click='register'>免费注册</div>
+					<div class="login_div a" style="display: inline-block;color:#FFF; background-color: rgb(354,94,90); width: 100px;text-align: center;" @click='login'>用户登录</div>
+				</div>
+				<div class="my_box"  style="display: none;" v-show="is_login">
+
+					<span class="my_coll a" @click='tomy_coll'>
+						<i class="fa fa-star " style="width: 15px;font-size:18px;"></i>
+						收藏
+					</span>
+					<span class="my_comment a" @click='tomy_comment'>
+						<i class="fa fa-comments " style="width: 15px;font-size:18px;"></i>
+						评论
+					</span>
+					<span class="my_like a" @click='tomy_sub'>
+						<i class="fa fa-bell " style="width: 15px;font-size:18px;"></i>
+						消息
+					</span>
+					<div class="my_av a" @click='space'>
+						<img class="my_av_pic" :src="_mediaPath+avatar" alt="my_av" style="border-radius: 50%;">
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div id="main">
+	<!-- 页面关系 -->
+	<div class="search_header content">
+		<span class="a ho_red" @click='_index'>网站首页</span>> <span class="">搜索结果</span>
+	</div>
+
+	<div class="header content" style="text-align: center; position: static!important; margin-left: 0px;height: 122px">
+		<img src="img/logo1.png" alt="" style="height: 50px;display: inline-block; margin: 30px 0 0">
+		<img src="img/logo2.png" alt="" style="height: 40px; display: inline-block;margin: 30px 20px 0 5px"  >
+		<!-- 输入框 -->
+		<div class="search_input_div bor_grey">
+			<input class="search_input_2" type="text" placeholder="请输入关键词" v-model='search_key' @keyup.13='search'/>
+			<div class="search_bt_2 a" @click='search'> 
+				<i class="fa fa-search" style="width: 15px;font-size:18px;color:#fff;"></i>
+			搜索</div>
+		</div>
+	</div>
+
+	<div class="main bor_grey" style="width: 865px; margin: 0 auto; padding-bottom: 30px; min-height: 250px;">
+		<div style="border-bottom: 1px solid #ccc;text-align: center;" >
+			<div class="lable a" style="border-right: 1px solid #ccc; " :class="[search_station =='作品'?'lable_selected':'']" @click="change_station('作品')">作品</div>
+			<div class="lable a" style="" :class="[search_station =='用户'?'lable_selected':'']" @click="change_station('用户')">用户</div>
+		</div>
+		<div class="art_result_box"  v-show='search_station=="作品"'>
+			<!-- 重复对象 -->
+			<div class="art_result_content" v-for='item in search_result_art'>
+				<img :src="_mediaPath+item.pic" class="art_result_pic a" @click='_tobook(item.id)'/>
+				<div class="art_result_detail" >
+					<p class="art_result_title a" @click='_tobook(item.id)'>{{item.title}}</p>
+					<br>
+
+					<div class="art_result_abstract">
+						{{item.content}}<br>
+					</div>
+
+					<div class="last_line" >
+						<span class="art_result_type a">{{item.type}}</span>
+						·
+						<span class="art_result_time">{{_time(item.pub_time)}}</span>
+						|
+						<span class="art_result_tag">
+							 {{item.user.name}}
+						</span>
+						<div class="art_result_com" style="float: right; font-size: 12px">
+							<div class="a ho_grey">
+								<i class="fa fa-comments a" style="width: 15px;font-size:16px;"></i>&nbsp{{item.com_num}}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		
+		</div>
+		<div class="art_result_box" v-show='search_station=="用户"'>
+
+			<!-- 重复内容 -->
+			<div class="result_user_box" v-for='item in search_result_user'>
+				<img :src="_mediaPath+item.avatar" :alt="item.nickname">
+				<div class="result_user_name a" @click='_touserinfo(item.id)'>
+					{{item.nickname}}
+				</div>
+			</div>			
+		
+		</div>
+		<div class="page_list">
+			
+		</div>
+	</div>
+
+</div>
+	<!-- 页尾 -->
+	<div class="footer">
+		<p>网站首页  |  联系方法  |  招聘信息  |  客户服务  |  隐私政策  |  广告服务  |   网站地图   |  意见反馈  |  不良信息举报</p>
+		<p style="margin: 10px 0"><a href="http://icp.chinaz.com/info?q=26jjk.cn" style="color: rgb(184, 185, 187); ">京ICP备20008448号-1</a> </p>
+	</div>
+
+</body>
+	<script type="text/javascript" src="js/global.js"></script>
+	<script type="text/javascript" src="js/search.js"></script>
+</html>

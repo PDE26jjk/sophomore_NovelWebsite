@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>登录</title>
+	<link rel="icon" href="img/logo1.png" type="image/x-icon">
+	<link rel="stylesheet" href="css/login.css">
+	<link rel="stylesheet" href="css/register.css">
+	<link rel="stylesheet" href="css/global.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script src="js/axios.min.js"></script>
+	<script src="js/qs.min.js"></script>
+</head>
+<body style="background-color: rgb(242,242,242);">
+<div id="base">
+	<!-- 页头 -->
+	<div class="top_color"></div>
+	<div class="top_bar">
+		<div class="content top_content">
+			<div class="top_content_left">
+				<span class="a" style="float: left;" @click='index'>悦享小说网站</span>
+			</div>
+			<div class="top_content_right">
+				<span class="a" @click='index' style="float: right;"><i class="fa fa-arrow-left">返回首页</i></span>
+			</div>
+		</div>
+	</div>
+</div>
+	<div class="header"></div>
+
+	<div class="login_box bor_grey" >
+		<div style="color: rgb(153,153,153); margin: 30px 0; font-size: 18px; text-align: center;">
+			<b>用户登录</b>
+		</div>
+
+		<div class="register_content" id="login_app">
+
+			<div class="register_input_box bor_grey">
+				<div class="register_input_box_i">
+					<i class="fa fa-user input_box_i"></i>
+				</div>
+				<!-- 用户名输入框 -->
+				<input type="text" class="register_input" placeholder="用户名或邮箱" v-model='login_name'/>
+			</div>
+
+			<div class="register_input_box bor_grey">
+				<div class="register_input_box_i">
+					<i class="fa fa-lock input_box_i"></i>
+				</div>
+				<!-- 密码输入框 -->
+				<input type="password" class="register_input" placeholder="请输入密码" v-model='pwd' @keyup.enter='login'/>
+			</div>
+
+			<div class="register_bt a" @click='login'>
+				登录
+			</div>
+			<div class="login_a " >
+				<p class="a ho_black" @click='toRegister'>立即注册</p>
+			</div>
+			<div style='text-align: center;'>
+			<div style=" border-top: 1px solid #ccc; "></div>
+				<!-- <div style="background-color: #fff;margin:-10px auto 0;width: 110px;color: rgb(153,153,153);">其他方式登录</div> -->
+			</div>
+			
+
+
+		</div>
+	</div>
+	<!-- 页尾 -->
+	<div class="foot_min content">
+		<div style="margin: 50px 0 0;color: rgb(153,153,153);">
+		网站首页  |  联系方法  |  招聘信息  |  客户服务  |  隐私政策  |  广告服务  |   网站地图   |  意见反馈  |  不良信息举报</div>
+		<div style="margin: 10px 0 20px; color: #bbb;">
+			<a href="http://icp.chinaz.com/info?q=26jjk.cn" style="color: #bbb; ">京ICP备20008448号-1</a> 
+		</div>
+	</div>
+</body>
+	<script type="text/javascript" src="js/login.js"></script>
+	<script type="text/javascript" src="js/global.js"></script>
+</html>

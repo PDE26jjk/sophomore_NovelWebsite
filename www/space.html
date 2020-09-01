@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>个人空间</title>
+	<link rel="icon" href="img/logo1.png" type="image/x-icon">
+	<link rel="stylesheet" href="css/space.css">
+	<link rel="stylesheet" href="css/global.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<script type="text/javascript" src="js/jquery-3.4.1.js"></script>
+	<script type="text/javascript" src="js/vue.js"></script>
+	<script src="js/axios.min.js"></script>
+	<script src="js/qs.min.js"></script>
+</head>
+<body style="background-color: rgb(245,245,245);">
+<div id="base">
+	<!-- 页头1.5 -->
+	<div class="top_color"></div>
+	<div class="top_bar">
+		<div class="content top_content">
+			<div class="top_content_left">
+				<span class="a" @click='index' style="float: left;">悦享小说网站</span>
+			</div>
+			<div class="top_content_right">
+				<div class="search_div">
+					<input class="search_input" type="text" placeholder="请输入关键词" v-model='search_key' @keyup.enter='search' @focus='search_input_focus' @blur='search_input_blur'/>
+					<i class="fa fa-search a icon" style="width: 15px;font-size:18px;color:rgb(102,102,102);" @click='search'></i>
+				</div>
+				<div style="display: inline;" style="display: none;" v-show="!is_login">
+					<div class="register_div a" @click='register'>免费注册</div>
+					<div class="login_div a" style="display: inline-block;color:#FFF; background-color: rgb(354,94,90); width: 100px;text-align: center;" @click='login'>用户登录</div>
+				</div>
+				<div class="my_box"  style="display: none;" v-show="is_login">
+
+					<span class="my_coll a" @click='tomy_coll'>
+						<i class="fa fa-star " style="width: 15px;font-size:18px;"></i>
+						收藏
+					</span>
+					<span class="my_comment a" @click='tomy_comment'>
+						<i class="fa fa-comments " style="width: 15px;font-size:18px;"></i>
+						评论
+					</span>
+					<span class="my_like a" @click='tomy_sub'>
+						<i class="fa fa-bell " style="width: 15px;font-size:18px;"></i>
+						消息
+					</span>
+					<div class="my_av a" @click='space'>
+						<img class="my_av_pic" :src="_mediaPath+avatar" alt="my_av" style="border-radius: 50%;">
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div id="space_app">
+	<!-- 主要内容 -->
+	<div class="main_content content " style="position: static!important;">
+		<!-- 右边菜单 -->
+		<div class="memu_content bor_grey" style="border-right-width: 0 ">
+			<!-- 头像 -->
+			<div class="user_pic_box">
+				<div class="usr_pic_div">
+					<img :src="_mediaPath+avatar" class="usr_pic"/>
+				</div>
+
+				<p class='text_center1 a ho_black' style="font-size: 14px;margin: 5px auto 0;width: 69px;" @click='logout'>退出登录</p>
+			</div>
+			<div class="memu_list_box">
+				<ul class='memu_list text_center1'>
+					<li v-for='(item,index) in lable_list' @click='changelable(index)' :class="[index == lable_selected? 'selected':'']" class=" a">
+						<i class="fa ":class="item[0]" ></i>{{item[1]}}</li>
+					
+				</ul>
+			</div>
+
+		</div>
+		
+		<!-- 中间 -->
+		<div class="detail_content bor_grey">
+			<!-- 点赞 -->
+			<div class="like_div" v-if='lable_selected == 0'>
+				<div class="detail_title_div">
+					<span class="detail_title_dot">·</span><p class="detail_title">您共有<span class="detail_title_number">{{like_list.length}}</span>条点赞</p>
+				</div>
+				<div class="like_content">
+					<!-- 重复内容 -->
+					<div class="like_art_pic a" v-for='item in like_list' @click='_tobook(item.id)'>
+						<img :src="_mediaPath+item.pic" :alt="item.title">
+					</div>
+					
+
+				</div>
+
+
+			</div>
+			<!-- 评论 -->
+			<div class="com_div" v-if='lable_selected == 1'>
+				<div class="detail_title_div">
+					<span class="detail_title_dot">·</span><p class="detail_title">您共有<span class="detail_title_number">{{com_list_length}}</span>条评论</p>
+				</div>
+				<div class="com_content_div">
+					<!-- 重复内容 -->
+					<div class="com_content" v-for='item in com_listbypage[com_page]'>
+						<div class="com_title a" @click='_tocomment(item.art_id)'>
+							{{item.art_title}}
+						</div>
+						<div class="com_content_content">
+							{{get_com_text(item)}}
+						</div>
+						<div class="com_content_bottom">
+							<span class="com_content_time">{{item.pub_time}}</span>
+							<span class="com_content_delbt a ho_black">删除</span>
+						</div>
+					</div>
+					<div class="page_div">
+						<span class="page_num a" v-for='(item,i) in com_listbypage' @click='com_page=i'>{{i+1}}</span>
+
+					</div>
+					
+				</div>
+
+
+			</div>
+			<!-- 收藏 -->
+			<div class="coll_div" v-if='lable_selected == 2'>
+				<div class="detail_title_div">
+					<span class="detail_title_dot">·</span><p class="detail_title">您共有<span class="detail_title_number">{{coll_list.length}}</span>条收藏</p>
+				</div>
+				<div class="like_content">
+					<!-- 重复内容 -->
+					<div class="like_art_pic a" v-for='item in coll_list' @click='_tobook(item.id)'>
+						<img :src="_mediaPath+item.pic" alt="item.title">
+					</div>
+
+				</div>
+
+
+			</div>
+			<!-- 订阅 -->
+			<div class="sub_div" v-if='lable_selected == 3'>
+				<div class="detail_title_div">
+					<span class="detail_title_dot">·</span><p class="detail_title">您共有<span class="detail_title_number">{{sub_list.length}}</span>个订阅</p>
+				</div>
+				<div class="sub_content">
+					<!-- 重复内容 -->
+					<div class="sub_user_box" v-for='item in sub_list'>
+						<img :src="_mediaPath+item.avatar" :alt="item.name">
+						<div class="sub_user_name a" @click='_touserinfo(item.id)' >
+							{{item.nickname}}
+						</div>
+					</div>
+					
+					
+
+				</div>
+
+
+			</div>
+			<!-- 作品上传 -->
+			<div class="cre_div" v-if='lable_selected == 4'>
+				<div class="detail_lable_div">
+					<div class="detail_lable a " @click='is_cre=0' :class="{'detail_lable_selected':!is_cre}">
+						作品管理
+					</div>
+					<div class="detail_lable a"   :class="{'detail_lable_selected':is_cre}">
+						创作面板
+					</div>					
+				</div>
+				<!-- 作品管理 -->
+				<div class="work_handle" v-show='!is_cre'>
+					<div class="one_of_work" v-for='(work,index) in works'>
+						<div class="my_work_title">
+							<span @click='tobook(work[0].id)' class="a ho_black">{{work[0].title}}</span>
+							<div class="my_work_right">
+								<span class="add_chapter ho_black a" @click='addchapter(work[0].id)'>添加章节<i class="fa fa-plus-square" ></i></span>
+								<i class="fa fa-ellipsis-h a chevron_down" @click='show_chapter(index)'></i>
+							</div>
+						</div>
+							<div class="work_chapter" :id="'work_'+index">
+								<span class="work_chapter_title" v-for='(chapter,index) in work.slice(1)'><span class="a ho_black" @click='tochapter(chapter.id)'>{{chapter.title}}</span>
+									<i class="fa fa-trash a work_chapter_del_bt" ></i>
+								</span>
+							</div>					
+					</div>					
+					<div class="add_work">
+						<div class="my_work_title">						
+							<div class="add_work_right">
+								<span class="add_work ho_black a" @click=addbook>添加作品 </span>								
+							</div>
+						</div>				
+					</div>
+
+				</div>
+				<!-- 创作面板 -->
+				<div class="work_cre" v-show='is_cre'>
+					<div class="work_article_title">
+						<input type="text" maxlength="30" class="work_article_input bor_grey" v-model='pub_title'>
+						<span style="color: #666666;padding-left: 10px;">: 标题</span>
+					</div>
+					
+					<div class="work_article_box bor_grey">
+						<textarea class="work_article_content" maxlength="10000" v-model='pub_content'></textarea>
+					</div>
+					<div class="work_article_pic" v-if='is_book'>
+						<span></span>
+						<input type="file" maxlength="30" ref="inputer" class="pic_input bor_grey" accept="image/jpg,image/jpeg,image/png,image/PNG">
+						<span style="color: #666666;padding-left: 10px;">: 上传封面</span>
+						<br><input type="text" v-model='book_type'class='work_type_input'/><span style="color: #666666;padding-left: 10px;">: 小说类型</span>
+					</div>
+					<div class="pub_bt a" @click='publish'>
+						发 布
+					</div>
+				</div>
+			</div>
+			<!-- 个人信息 -->
+			<div class="info_div" v-if='lable_selected == 5'>
+				<div class="detail_lable_div">
+					<div class="detail_lable a">
+						基本信息
+					</div>
+				</div>
+				<div class="info_content">
+					<div class="change_av_div">
+						<div class="av_pic">
+							<img id='my_av_space' :src="_mediaPath+avatar" alt="头像" >
+							<img id='pic_up' style="display: none;">
+						</div>						
+						<div class="change_av_bt bor_grey ho_black " >
+							修改头像
+							<input type="file" id='av_file' class="av_pic_bt a" style="margin-left: -130px; width: 100% ;height: 100%; opacity: 0;" @change='changepic' accept="image/jpg,image/jpeg,image/png,image/PNG" ref='av'>
+						</div>
+						
+					</div>
+					<div class="change_info_div">
+						<div class="my_name">
+							<span>用户名:</span>
+							<h3>{{name}}</h3>
+						</div>
+						<div class="my_nickname">
+							<span>昵称:</span>
+							<input type="text" maxlength="30" class="my_nickname_input bor_grey" v-model='nickname'>
+						</div>
+						<div class="my_intro">
+							<span style="vertical-align: top; margin-top: 4px;">个人简介:</span>
+							<div class="my_intro_box bor_grey">
+								<textarea class="my_intro_content" maxlength="250" v-model='intro'></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="upload_bt a" @click='upload_info'>
+						保 存
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+
+
+
+		<!-- 右边 -->
+		<div class="right_box">
+
+			<div class="hot_content_box">
+				<div class="hot_title">
+				浏览最多
+				</div>
+				<div class="hot_content">
+					<img src="img/somepic.png" class="hot_content_pic"/>
+					<div style="display: inline-block; padding-left: 15px;vertical-align:top;">
+						<p class="hot_content_title text_center1" style="font-size: 14px">何以笙箫默</p>
+						
+					</div>
+				</div>
+
+				<div class="hot_content">
+					<img src="img/somepic.png" class="hot_content_pic"/>
+					<div style="display: inline-block; padding-left: 15px;vertical-align:top;">
+						<p class="hot_content_title text_center1" style="font-size: 14px">何以笙箫默</p>
+						
+					</div>
+				</div>
+
+				<div class="hot_content">
+					<img src="img/somepic.png" class="hot_content_pic"/>
+					<div style="display: inline-block; padding-left: 15px;vertical-align:top;">
+						<p class="hot_content_title text_center1" style="font-size: 14px">何以笙箫默</p>
+						
+					</div>
+				</div>
+			</div>
+
+			<div class="hot_content_box">
+				<div class="hot_title">
+				为你推荐
+				</div>	
+				<div class="hot_content">
+					<img src="img/somepic.png" class="hot_content_pic"/>
+					<div style="display: inline-block; padding-left: 15px;vertical-align:top;">
+						<p class="hot_content_title text_center1" style="font-size: 14px">何以笙箫默</p>
+						
+					</div>
+				</div>
+
+				<div class="hot_content">
+					<img src="img/somepic.png" class="hot_content_pic"/>
+					<div style="display: inline-block; padding-left: 15px;vertical-align:top;">
+						<p class="hot_content_title text_center1" style="font-size: 14px">何以笙箫默</p>
+						
+					</div>
+				</div>
+
+				<div class="hot_content">
+					<img src="img/somepic.png" class="hot_content_pic"/>
+					<div style="display: inline-block; padding-left: 15px;vertical-align:top;">
+						<p class="hot_content_title text_center1" style="font-size: 14px">何以笙箫默</p>
+						
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- 页尾 -->
+	<div class="footer">
+		<p>网站首页  |  联系方法  |  招聘信息  |  客户服务  |  隐私政策  |  广告服务  |   网站地图   |  意见反馈  |  不良信息举报</p>
+		<p style="margin: 10px 0"><a href="http://icp.chinaz.com/info?q=26jjk.cn" style="color: rgb(184, 185, 187); ">京ICP备20008448号-1</a> </p>
+	</div>	
+</div>
+</body>
+	<script type="text/javascript" src="js/global.js"></script>
+	<script type="text/javascript" src="js/space.js"></script>
+
+</html>
